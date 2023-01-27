@@ -1,8 +1,19 @@
 // Import global CSS from Stellar Design System
 @import url(@stellar/design-system/build/styles.min.css);
 
+#root {
+  --layout-window-width-max: 700px;
+}
+
 .Layout__inset > .InfoBlock--error {
   margin-bottom: 1rem;
+}
+
+.FormContainer {
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+  align-items: center;
 }
 
 // 404 error page

@@ -1,5 +1,8 @@
-import { Button, InfoBlock, Layout } from "@stellar/design-system";
+import { Layout } from "@stellar/design-system";
+import { Home } from "pages/Home";
+import { Kyc } from "pages/Kyc";
 import { NotFound } from "pages/NotFound";
+import { Status } from "pages/Status";
 import { useEffect, useState } from "react";
 import {
   Navigate,
@@ -14,7 +17,11 @@ export const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [jwtToken, setJwtToken] = useState("");
+  // TODO: remove token
+  const [jwtToken, setJwtToken] = useState(
+    "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJiMjQ3N2EyMDYwNTBkZTMxMGI1MzMyMjBiNjBkMGM2MjVhZjhkMmEwM2U0ODRiNjJhMGZhYTAwYjRlZDMwYjRhIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgiLCJzdWIiOiJHQldBTzVFNlJRNjRVS1lINUlaSUk0S1RQUldHRVBZUkRLVlFFSVpVVkc1STQ1SFA0UzZHR0lWMiIsImlhdCI6MTY3NDg1NDk4OCwiZXhwIjoxNjc0OTQxMzg4fQ.gjtYoq8jP_uH5d_ew7cG6YXnybpdeNekB4jmO6kfoXg",
+  );
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [txnStatus, setTxnStatus] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -25,7 +32,7 @@ export const App = () => {
   useEffect(() => {
     if (jwtToken) {
       navigate({ pathname: "/kyc", search: location.search });
-      // TODO: get txn from JTW to check status
+      // TODO: get txn from JTW to check status?
     }
   }, [jwtToken]);
 
@@ -34,25 +41,6 @@ export const App = () => {
       navigate({ pathname: "/status", search: location.search });
     }
   }, [txnStatus]);
-
-  // TODO: move to pages
-  const HomePage = () => (
-    <>
-      {errorMessage ? (
-        <InfoBlock variant={InfoBlock.variant.error}>{errorMessage}</InfoBlock>
-      ) : null}
-      <div>Home</div>
-    </>
-  );
-  const KycPage = () => (
-    <>
-      <div>KYC</div>
-      <Button onClick={handleSubmitKyc}>Submit</Button>
-    </>
-  );
-
-  // TODO: poll for status updates on this page, update txnStatus with callback
-  const StatusPage = () => <div>Status/confirmation</div>;
 
   const setQueryParam = () => {
     const queryParams = new URLSearchParams(location.search);
@@ -65,11 +53,6 @@ export const App = () => {
     } else {
       setErrorMessage("JWT is missing");
     }
-  };
-
-  const handleSubmitKyc = () => {
-    // TODO: submit to backend
-    setTxnStatus("started");
   };
 
   const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
@@ -86,12 +69,12 @@ export const App = () => {
       <Layout.Content>
         <Layout.Inset>
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<Home errorMessage={errorMessage} />} />
             <Route
               path="/kyc"
               element={
                 <ProtectedRoute>
-                  <KycPage />
+                  <Kyc jwtToken={jwtToken} />
                 </ProtectedRoute>
               }
             />
@@ -99,7 +82,7 @@ export const App = () => {
               path="/status"
               element={
                 <ProtectedRoute>
-                  <StatusPage />
+                  <Status />
                 </ProtectedRoute>
               }
             />
