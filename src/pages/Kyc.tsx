@@ -1,7 +1,8 @@
 import { Input, Button } from "@stellar/design-system";
-import { useState } from "react";
+import { BUSINESS_SERVER_ENDPOINT } from "App";
+import { useEffect, useState } from "react";
 
-export const Kyc = ({ jwtToken }: { jwtToken: string }) => {
+export const Kyc = ({ sessionToken }: { sessionToken: string }) => {
   type KycFields = {
     name: string;
     surname: string;
@@ -15,6 +16,28 @@ export const Kyc = ({ jwtToken }: { jwtToken: string }) => {
     email: "test@test.com",
   });
 
+  useEffect(() => {
+    fetchTransaction();
+  }, [sessionToken]);
+
+  const fetchTransaction = async () => {
+    try {
+      // TODO: deposit or withdraw?
+      const response = await fetch(`${BUSINESS_SERVER_ENDPOINT}/transaction`, {
+        headers: {
+          Authorization: `Bearer ${sessionToken}`,
+        },
+      });
+
+      const json = await response.json();
+
+      console.log(">>> response: ", json);
+    } catch (e: any) {
+      // TODO: handle error
+      console.log(e);
+    }
+  };
+
   // TODO: update any type
   const handleChangeValue = (e: any) => {
     setKycFields((prevState) => ({
@@ -26,21 +49,7 @@ export const Kyc = ({ jwtToken }: { jwtToken: string }) => {
   // TODO: update any type
   const handleSubmitKyc = async (e: any) => {
     e.preventDefault();
-
-    try {
-      // TODO: deposit or withdraw?
-      const request = await fetch("http://localhost:8091/start", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      });
-
-      const response = await request.json();
-      console.log(">>> response: ", response);
-    } catch (e: any) {
-      console.log(e);
-    }
+    // TODO:
   };
 
   return (

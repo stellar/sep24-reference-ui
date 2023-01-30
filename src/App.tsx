@@ -1,8 +1,9 @@
 import { Layout } from "@stellar/design-system";
-import { Home } from "pages/Home";
 import { Kyc } from "pages/Kyc";
 import { NotFound } from "pages/NotFound";
+import { Start } from "pages/Start";
 import { Status } from "pages/Status";
+import { Welcome } from "pages/Welcome";
 import { useEffect, useState } from "react";
 import {
   Navigate,
@@ -13,53 +14,69 @@ import {
 } from "react-router-dom";
 import "./styles.scss";
 
+// TODO: move to ENV?
+export const BUSINESS_SERVER_ENDPOINT = "http://localhost:8091";
+
 export const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // TODO: remove token
-  const [jwtToken, setJwtToken] = useState(
-    "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJiMjQ3N2EyMDYwNTBkZTMxMGI1MzMyMjBiNjBkMGM2MjVhZjhkMmEwM2U0ODRiNjJhMGZhYTAwYjRlZDMwYjRhIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgiLCJzdWIiOiJHQldBTzVFNlJRNjRVS1lINUlaSUk0S1RQUldHRVBZUkRLVlFFSVpVVkc1STQ1SFA0UzZHR0lWMiIsImlhdCI6MTY3NDg1NDk4OCwiZXhwIjoxNjc0OTQxMzg4fQ.gjtYoq8jP_uH5d_ew7cG6YXnybpdeNekB4jmO6kfoXg",
-  );
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [txnStatus, setTxnStatus] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [token, setToken] = useState("");
+  const [sessionToken, setSessionToken] = useState("");
+  // const [txnStatus, setTxnStatus] = useState("");
 
+  // Set token or session token in state
   useEffect(() => {
     setQueryParam();
-  }, []);
+  }, [location.search]);
 
+  // Get session token from token
   useEffect(() => {
-    if (jwtToken) {
+    console.log(">>> token: ", token);
+    if (token) {
+      navigate({ pathname: "/start", search: location.search });
+    }
+  }, [token]);
+
+  // Set session token if page refreshed
+  useEffect(() => {
+    if (sessionToken) {
       navigate({ pathname: "/kyc", search: location.search });
-      // TODO: get txn from JTW to check status?
     }
-  }, [jwtToken]);
+  }, [sessionToken]);
 
-  useEffect(() => {
-    if (txnStatus) {
-      navigate({ pathname: "/status", search: location.search });
-    }
-  }, [txnStatus]);
+  // useEffect(() => {
+  //   if (txnStatus) {
+  //     navigate({ pathname: "/status", search: location.search });
+  //   }
+  // }, [txnStatus]);
 
   const setQueryParam = () => {
     const queryParams = new URLSearchParams(location.search);
+    const token = queryParams.get("token");
+    const sessionToken = queryParams.get("session_token");
 
-    const jwtToken = queryParams.get("jwt_token");
-
-    // TODO: validate JWT token
-    if (jwtToken !== null) {
-      setJwtToken(jwtToken);
+    if (token) {
+      setToken(token);
+      setSessionToken("");
+    } else if (sessionToken) {
+      setToken("");
+      setSessionToken(sessionToken);
     } else {
-      setErrorMessage("JWT is missing");
+      // TODO: handle error
     }
   };
 
+  const handleStartSession = (sToken: string) => {
+    navigate({ pathname: "/kyc", search: `?session_token=${sToken}` });
+  };
+
   const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
-    return jwtToken ? (
+    return sessionToken ? (
       children
     ) : (
-      <Navigate to={{ pathname: "/", search: location.search }} />
+      // TODO: can navigate to a different page
+      <Navigate to={{ pathname: "/", search: "" }} />
     );
   };
 
@@ -69,12 +86,16 @@ export const App = () => {
       <Layout.Content>
         <Layout.Inset>
           <Routes>
-            <Route path="/" element={<Home errorMessage={errorMessage} />} />
+            <Route path="/" element={<Welcome />} />
+            <Route
+              path="/start"
+              element={<Start token={token} callback={handleStartSession} />}
+            />
             <Route
               path="/kyc"
               element={
                 <ProtectedRoute>
-                  <Kyc jwtToken={jwtToken} />
+                  <Kyc sessionToken={sessionToken} />
                 </ProtectedRoute>
               }
             />
