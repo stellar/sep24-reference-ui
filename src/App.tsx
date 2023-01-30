@@ -32,7 +32,6 @@ export const App = () => {
 
   // Get session token from token
   useEffect(() => {
-    console.log(">>> token: ", token);
     if (token) {
       navigate({ pathname: "/start", search: location.search });
     }
