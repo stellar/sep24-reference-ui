@@ -86,10 +86,11 @@ export const Kyc = ({ sessionToken }: { sessionToken: string }) => {
     }
 
     try {
-      const response = await fetch(`${BUSINESS_SERVER_ENDPOINT}/kyc`, {
+      const response = await fetch(`${BUSINESS_SERVER_ENDPOINT}/submit`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${sessionToken}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(kycFields[type]),
       });
