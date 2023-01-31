@@ -1,9 +1,3 @@
-import { Layout } from "@stellar/design-system";
-import { Kyc } from "pages/Kyc";
-import { NotFound } from "pages/NotFound";
-import { Start } from "pages/Start";
-import { Status } from "pages/Status";
-import { Welcome } from "pages/Welcome";
 import { useEffect, useState } from "react";
 import {
   Navigate,
@@ -12,6 +6,15 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
+import { Layout } from "@stellar/design-system";
+
+import { fetchTransaction } from "helpers/fetchTransaction";
+import { Kyc } from "pages/Kyc";
+import { NotFound } from "pages/NotFound";
+import { Start } from "pages/Start";
+import { Status } from "pages/Status";
+import { Welcome } from "pages/Welcome";
+
 import "./styles.scss";
 
 // TODO: move to ENV?
@@ -23,7 +26,8 @@ export const App = () => {
 
   const [token, setToken] = useState("");
   const [sessionToken, setSessionToken] = useState("");
-  // const [txnStatus, setTxnStatus] = useState("");
+  // TODO: any type
+  const [txnInfo, setTxnInfo] = useState<any>();
 
   // Set token or session token in state
   useEffect(() => {
@@ -40,15 +44,9 @@ export const App = () => {
   // Set session token if page refreshed
   useEffect(() => {
     if (sessionToken) {
-      navigate({ pathname: "/kyc", search: location.search });
+      handleStartSession(sessionToken);
     }
   }, [sessionToken]);
-
-  // useEffect(() => {
-  //   if (txnStatus) {
-  //     navigate({ pathname: "/status", search: location.search });
-  //   }
-  // }, [txnStatus]);
 
   const setQueryParam = () => {
     const queryParams = new URLSearchParams(location.search);
@@ -66,15 +64,25 @@ export const App = () => {
     }
   };
 
-  const handleStartSession = (sToken: string) => {
-    navigate({ pathname: "/kyc", search: `?session_token=${sToken}` });
+  const handleStartSession = async (sToken: string) => {
+    const txnInfo = await fetchTransaction(sToken);
+    setTxnInfo(txnInfo);
+
+    if (txnInfo.status === "incomplete") {
+      navigate({ pathname: "/kyc", search: `?session_token=${sToken}` });
+    } else {
+      navigate({ pathname: "/status", search: `?session_token=${sToken}` });
+    }
+  };
+
+  const handleFinishTransaction = (sToken: string) => {
+    navigate({ pathname: "/status", search: `?session_token=${sToken}` });
   };
 
   const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
     return sessionToken ? (
       children
     ) : (
-      // TODO: can navigate to a different page
       <Navigate to={{ pathname: "/", search: "" }} />
     );
   };
@@ -94,7 +102,11 @@ export const App = () => {
               path="/kyc"
               element={
                 <ProtectedRoute>
-                  <Kyc sessionToken={sessionToken} />
+                  <Kyc
+                    type={txnInfo?.kind}
+                    sessionToken={sessionToken}
+                    callback={handleFinishTransaction}
+                  />
                 </ProtectedRoute>
               }
             />
@@ -102,7 +114,7 @@ export const App = () => {
               path="/status"
               element={
                 <ProtectedRoute>
-                  <Status />
+                  <Status txnInfo={txnInfo} sessionToken={sessionToken} />
                 </ProtectedRoute>
               }
             />

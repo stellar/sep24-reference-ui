@@ -1,5 +1,5 @@
-import { BUSINESS_SERVER_ENDPOINT } from "App";
 import { useEffect } from "react";
+import { BUSINESS_SERVER_ENDPOINT } from "App";
 
 export const Start = ({
   token,
@@ -14,7 +14,6 @@ export const Start = ({
 
   const fetchSessionToken = async () => {
     try {
-      // TODO: deposit or withdraw?
       const response = await fetch(`${BUSINESS_SERVER_ENDPOINT}/start`, {
         method: "POST",
         headers: {
@@ -30,6 +29,5 @@ export const Start = ({
     }
   };
 
-  // TODO: update text
   return <div>Starting session...</div>;
 };

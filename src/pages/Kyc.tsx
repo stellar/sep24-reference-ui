@@ -1,8 +1,16 @@
+import { useState } from "react";
 import { Input, Button, Heading2 } from "@stellar/design-system";
 import { BUSINESS_SERVER_ENDPOINT } from "App";
-import { useEffect, useState } from "react";
 
-export const Kyc = ({ sessionToken }: { sessionToken: string }) => {
+export const Kyc = ({
+  sessionToken,
+  type,
+  callback,
+}: {
+  sessionToken: string;
+  type: "deposit" | "withdrawal";
+  callback: (token: string) => void;
+}) => {
   type DepositFields = {
     amount: string;
     name: string;
@@ -21,47 +29,25 @@ export const Kyc = ({ sessionToken }: { sessionToken: string }) => {
 
   type KycFields = {
     deposit?: DepositFields;
-    withdraw?: WithdrawFields;
+    withdrawal?: WithdrawFields;
   };
 
-  const [type, setType] = useState<"deposit" | "withdraw">();
-  // TODO: remove default values
   const [kycFields, setKycFields] = useState<KycFields>({
     deposit: {
-      amount: "100",
-      name: "Test",
-      surname: "Tester",
-      email: "test@test.com",
+      amount: "",
+      name: "",
+      surname: "",
+      email: "",
     },
-    withdraw: {
-      amount: "100",
-      name: "Test",
-      surname: "Tester",
-      email: "test@test.com",
-      bank: "My bank",
-      account: "123123123",
+    withdrawal: {
+      amount: "",
+      name: "",
+      surname: "",
+      email: "",
+      bank: "",
+      account: "",
     },
   });
-
-  useEffect(() => {
-    fetchTransaction();
-  }, [sessionToken]);
-
-  const fetchTransaction = async () => {
-    try {
-      const response = await fetch(`${BUSINESS_SERVER_ENDPOINT}/transaction`, {
-        headers: {
-          Authorization: `Bearer ${sessionToken}`,
-        },
-      });
-
-      const { kind } = await response.json();
-      setType(kind);
-    } catch (e: any) {
-      // TODO: handle error
-      console.log(e);
-    }
-  };
 
   // TODO: update any type
   const handleChangeValue = (e: any) => {
@@ -95,9 +81,8 @@ export const Kyc = ({ sessionToken }: { sessionToken: string }) => {
         body: JSON.stringify(kycFields[type]),
       });
 
-      const json = await response.json();
-
-      console.log(">>> json: ", json);
+      const { sessionId } = await response.json();
+      callback(sessionId);
     } catch (e: any) {
       // TODO: handle error
       console.log(e);
@@ -153,7 +138,7 @@ export const Kyc = ({ sessionToken }: { sessionToken: string }) => {
           label="Amount"
           id="amount"
           name="amount"
-          value={kycFields.withdraw?.amount || ""}
+          value={kycFields.withdrawal?.amount || ""}
           onChange={handleChangeValue}
           required
         />
@@ -161,7 +146,7 @@ export const Kyc = ({ sessionToken }: { sessionToken: string }) => {
           label="First name"
           id="name"
           name="name"
-          value={kycFields.withdraw?.name || ""}
+          value={kycFields.withdrawal?.name || ""}
           onChange={handleChangeValue}
           required
         />
@@ -169,7 +154,7 @@ export const Kyc = ({ sessionToken }: { sessionToken: string }) => {
           label="Last name"
           id="surname"
           name="surname"
-          value={kycFields.withdraw?.surname || ""}
+          value={kycFields.withdrawal?.surname || ""}
           onChange={handleChangeValue}
           required
         />
@@ -178,7 +163,7 @@ export const Kyc = ({ sessionToken }: { sessionToken: string }) => {
           id="email"
           name="email"
           type="email"
-          value={kycFields.withdraw?.email || ""}
+          value={kycFields.withdrawal?.email || ""}
           onChange={handleChangeValue}
           required
         />
@@ -186,7 +171,7 @@ export const Kyc = ({ sessionToken }: { sessionToken: string }) => {
           label="Bank"
           id="bank"
           name="bank"
-          value={kycFields.withdraw?.bank || ""}
+          value={kycFields.withdrawal?.bank || ""}
           onChange={handleChangeValue}
           required
         />
@@ -194,7 +179,7 @@ export const Kyc = ({ sessionToken }: { sessionToken: string }) => {
           label="Account"
           id="account"
           name="account"
-          value={kycFields.withdraw?.account || ""}
+          value={kycFields.withdrawal?.account || ""}
           onChange={handleChangeValue}
           required
         />
@@ -209,7 +194,7 @@ export const Kyc = ({ sessionToken }: { sessionToken: string }) => {
   return (
     <form className="FormContainer" onSubmit={handleSubmitKyc}>
       {type === "deposit" ? renderDepositFields() : null}
-      {type === "withdraw" ? renderWithdrawFields() : null}
+      {type === "withdrawal" ? renderWithdrawFields() : null}
       <Button type="submit">Submit</Button>
     </form>
   );
