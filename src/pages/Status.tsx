@@ -28,6 +28,10 @@ export const Status = ({
     }
   };
 
+  const formatAmount = (amount: string) => {
+    return `${amount || ""} ${info.request_asset_code || ""}`;
+  };
+
   return (
     <>
       <Heading2>Transaction information</Heading2>
@@ -44,17 +48,23 @@ export const Status = ({
 
         <div className="TxnInfo__row">
           <div className="TxnInfo__row__label">Send amount</div>
-          <div className="TxnInfo__row__value">{info.amount_in?.amount}</div>
+          <div className="TxnInfo__row__value">
+            {formatAmount(info.amount_in?.amount)}
+          </div>
         </div>
 
         <div className="TxnInfo__row">
           <div className="TxnInfo__row__label">Receive amount</div>
-          <div className="TxnInfo__row__value">{info.amount_out?.amount}</div>
+          <div className="TxnInfo__row__value">
+            {formatAmount(info.amount_out?.amount)}
+          </div>
         </div>
 
         <div className="TxnInfo__row">
           <div className="TxnInfo__row__label">Fee amount</div>
-          <div className="TxnInfo__row__value">{info.amount_fee?.amount}</div>
+          <div className="TxnInfo__row__value">
+            {formatAmount(info.amount_fee?.amount)}
+          </div>
         </div>
 
         <div className="TxnInfo__row">
@@ -76,6 +86,20 @@ export const Status = ({
         <div className="TxnInfo__row">
           <div className="TxnInfo__row__label">Memo</div>
           <div className="TxnInfo__row__value">{info.memo || "-"}</div>
+        </div>
+
+        <div className="TxnInfo__row">
+          <div className="TxnInfo__row__label">Stellar transaction ID</div>
+          <div className="TxnInfo__row__value">
+            {info.stellar_transaction_id || "-"}
+          </div>
+        </div>
+
+        <div className="TxnInfo__row">
+          <div className="TxnInfo__row__label">Withdraw anchor account</div>
+          <div className="TxnInfo__row__value">
+            {info.withdrawal_anchor_account || "-"}
+          </div>
         </div>
       </div>
     </>
