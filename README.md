@@ -1,6 +1,6 @@
 # SEP-24 Reference UI
 
-## Developing
+## Development
 
 We use `yarn` package manager.
 
