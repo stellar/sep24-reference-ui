@@ -1,6 +1,6 @@
 # SEP-24 Reference UI
 
-## Development
+## Developing:
 
 We use `yarn` package manager.
 
@@ -16,3 +16,4 @@ rebuild, and reload the site automatically, run the start script.
 Builds the app for production to the `build` folder.
 
 `yarn build`
+
