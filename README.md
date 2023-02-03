@@ -16,4 +16,3 @@ rebuild, and reload the site automatically, run the start script.
 Builds the app for production to the `build` folder.
 
 `yarn build`
-
