@@ -11,6 +11,7 @@ export const Status = ({
   sessionToken: string;
 }) => {
   const [info, setInfo] = useState<any>(txnInfo);
+  const re = /(.*:)?(.*)(:.*)/gi;
 
   useEffect(() => {
     pollTransaction();
@@ -28,8 +29,8 @@ export const Status = ({
     }
   };
 
-  const formatAmount = (amount: string) => {
-    return `${amount || ""} ${info.request_asset_code || ""}`;
+  const formatAmount = (amount: string, amountAsset: string) => {
+    return `${amount || ""} ${(amountAsset || "").replace(re, "$2")}`;
   };
 
   return (
@@ -49,21 +50,21 @@ export const Status = ({
         <div className="TxnInfo__row">
           <div className="TxnInfo__row__label">Send amount</div>
           <div className="TxnInfo__row__value">
-            {formatAmount(info.amount_in?.amount)}
+            {formatAmount(info.amount_in?.amount, info.amount_in?.asset)}
           </div>
         </div>
 
         <div className="TxnInfo__row">
           <div className="TxnInfo__row__label">Receive amount</div>
           <div className="TxnInfo__row__value">
-            {formatAmount(info.amount_out?.amount)}
+            {formatAmount(info.amount_out?.amount, info.amount_out?.asset)}
           </div>
         </div>
 
         <div className="TxnInfo__row">
           <div className="TxnInfo__row__label">Fee amount</div>
           <div className="TxnInfo__row__value">
-            {formatAmount(info.amount_fee?.amount)}
+            {formatAmount(info.amount_fee?.amount, info.amount_fee?.asset)}
           </div>
         </div>
 
