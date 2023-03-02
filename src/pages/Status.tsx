@@ -33,6 +33,17 @@ export const Status = ({
     return `${amount || ""} ${(amountAsset || "").replace(re, "$2")}`;
   };
 
+  const getTransactionId = (info: any) => {
+    if (
+      info.stellar_transactions === undefined ||
+      info.stellar_transactions === null
+    ) {
+      return "-";
+    } else {
+      return info.stellar_transactions[0]?.id || "-";
+    }
+  };
+
   return (
     <>
       <Heading2>Transaction information</Heading2>
@@ -91,15 +102,13 @@ export const Status = ({
 
         <div className="TxnInfo__row">
           <div className="TxnInfo__row__label">Stellar transaction ID</div>
-          <div className="TxnInfo__row__value">
-            {info.stellar_transaction_id || "-"}
-          </div>
+          <div className="TxnInfo__row__value">{getTransactionId(info)}</div>
         </div>
 
         <div className="TxnInfo__row">
-          <div className="TxnInfo__row__label">Withdraw anchor account</div>
+          <div className="TxnInfo__row__label">Destination account</div>
           <div className="TxnInfo__row__value">
-            {info.withdrawal_anchor_account || "-"}
+            {info.destination_account || "-"}
           </div>
         </div>
       </div>
