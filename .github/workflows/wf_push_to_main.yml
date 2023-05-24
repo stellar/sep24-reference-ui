@@ -1,0 +1,39 @@
+name: Push/Merge to `main` branch
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build_and_push_docker_image:
+    name: Push to DockerHub (tag=stellar/sep24-reference-ui:edge)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@bb984efc561711aaa26e433c32c3521176eae55b
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Get current date
+        id: get_date
+        run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Calculate Github SHA
+        shell: bash
+        id: get_sha
+        run:
+          echo "SHA=$(git rev-parse --short ${{ github.sha }})" >>
+          $GITHUB_OUTPUT
+
+      - name:
+          Build and push to DockerHub with tags `edge` and `edge-{date}-{sha}
+        uses: docker/build-push-action@7f9d37fa544684fb73bfe4835ed7214c255ce02b
+        with:
+          push: true
+          tags:
+            stellar/sep24-reference-ui:edge,stellar/sep24-reference-ui:edge-${{
+            steps.get_date.outputs.DATE }}-${{ steps.get_sha.outputs.SHA }}
+          file: Dockerfile
