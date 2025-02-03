@@ -13,7 +13,7 @@ module.exports = {
       },
     ],
   ],
-  plugins: ["transform-class-properties", "react-hot-loader/babel"],
+  plugins: ["transform-class-properties"],
   env: {
     test: {
       plugins: ["transform-es2015-modules-commonjs"],
