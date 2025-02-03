@@ -7,7 +7,6 @@ const CopyPlugin = require("copy-webpack-plugin");
 const ESLintPlugin = require("eslint-webpack-plugin");
 const ProvidePlugin = require("webpack").ProvidePlugin;
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
-const webpack = require("webpack");
 const Dotenv = require("dotenv-webpack");
 
 module.exports = {
@@ -166,11 +165,5 @@ module.exports = {
       path: process.env.config || path.resolve(__dirname, "config.env"), // Ensure Webpack reads config.env
       systemvars: true, // Load system environment variables
     }),
-    // Inject environment variable
-    // e.g. BUSINESS_SERVER_ENDPOINT=localhost:2 yarn start
-    // new webpack.DefinePlugin({
-    //   'process.env.BUSINESS_SERVER_ENDPOINT': JSON.stringify(
-    //     process.env.BUSINESS_SERVER_ENDPOINT || ''),
-    // }),
   ],
 };
