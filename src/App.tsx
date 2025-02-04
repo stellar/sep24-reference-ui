@@ -17,8 +17,7 @@ import { Welcome } from "pages/Welcome";
 
 import "./styles.scss";
 
-// TODO: move to ENV?
-export const BUSINESS_SERVER_ENDPOINT = "http://localhost:8091";
+export const BUSINESS_SERVER_ENDPOINT = process.env.BUSINESS_SERVER_ENDPOINT;
 
 export const App = () => {
   const navigate = useNavigate();

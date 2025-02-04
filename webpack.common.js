@@ -7,6 +7,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const ESLintPlugin = require("eslint-webpack-plugin");
 const ProvidePlugin = require("webpack").ProvidePlugin;
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
+const Dotenv = require("dotenv-webpack");
 
 module.exports = {
   entry: "./src/index.tsx",
@@ -157,6 +158,12 @@ module.exports = {
     new ESLintPlugin({
       extensions: [".tsx", ".ts", ".js"],
       exclude: "node_modules",
+    }),
+    // Load environment variables from .env file
+    // e.g. config=./config.env yarn start
+    new Dotenv({
+      path: process.env.config || path.resolve(__dirname, "config.env"), // Ensure Webpack reads config.env
+      systemvars: true, // Load system environment variables
     }),
   ],
 };
