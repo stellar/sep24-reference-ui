@@ -16,5 +16,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y gpg curl git ma
 
 COPY . /app/
 RUN yarn install
-RUN yarn build
-RUN yarn start
+
+# Set the entrypoint to run serve
+ENTRYPOINT ["yarn", "start"]
