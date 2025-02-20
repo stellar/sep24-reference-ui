@@ -122,10 +122,7 @@ export const App = () => {
             <Route
               path="/txn"
               element={
-                <TxnInfo
-                  txnId={searchParams.get("transaction_id") ?? ""}
-                  jwt={searchParams.get("token") ?? ""}
-                />
+                <TxnInfo txnId={searchParams.get("transaction_id") ?? ""} />
               }
             />
             <Route path="*" element={<NotFound />} />
