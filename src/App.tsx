@@ -5,6 +5,7 @@ import {
   Routes,
   useLocation,
   useNavigate,
+  useSearchParams,
 } from "react-router-dom";
 import { Layout } from "@stellar/design-system";
 
@@ -16,6 +17,7 @@ import { Status } from "pages/Status";
 import { Welcome } from "pages/Welcome";
 
 import "./styles.scss";
+import { TxnInfo } from "./pages/TxnInfo";
 
 export const BUSINESS_SERVER_ENDPOINT = process.env.BUSINESS_SERVER_ENDPOINT;
 
@@ -25,8 +27,8 @@ export const App = () => {
 
   const [token, setToken] = useState("");
   const [sessionToken, setSessionToken] = useState("");
-  // TODO: any type
   const [txnInfo, setTxnInfo] = useState<any>();
+  const [searchParams] = useSearchParams();
 
   // Set token or session token in state
   useEffect(() => {
@@ -35,14 +37,14 @@ export const App = () => {
 
   // Get session token from token
   useEffect(() => {
-    if (token) {
+    if (token && !location.pathname.includes("txn")) {
       navigate({ pathname: "/start", search: location.search });
     }
   }, [token]);
 
   // Set session token if page refreshed
   useEffect(() => {
-    if (sessionToken) {
+    if (sessionToken && !location.pathname.includes("txn")) {
       handleStartSession(sessionToken);
     }
   }, [sessionToken]);
@@ -115,6 +117,12 @@ export const App = () => {
                 <ProtectedRoute>
                   <Status txnInfo={txnInfo} sessionToken={sessionToken} />
                 </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/txn"
+              element={
+                <TxnInfo txnId={searchParams.get("transaction_id") ?? ""} />
               }
             />
             <Route path="*" element={<NotFound />} />
