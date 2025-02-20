@@ -97,7 +97,7 @@ export const Kyc = ({
           label="Amount"
           id="amount"
           name="amount"
-          value={kycFields.deposit?.amount || "10"}
+          value={kycFields.deposit?.amount || ""}
           onChange={handleChangeValue}
           required
         />
@@ -105,7 +105,7 @@ export const Kyc = ({
           label="First name"
           id="name"
           name="name"
-          value={kycFields.deposit?.name || "John"}
+          value={kycFields.deposit?.name || ""}
           onChange={handleChangeValue}
           required
         />
@@ -113,7 +113,7 @@ export const Kyc = ({
           label="Last name"
           id="surname"
           name="surname"
-          value={kycFields.deposit?.surname || "Doe"}
+          value={kycFields.deposit?.surname || ""}
           onChange={handleChangeValue}
           required
         />
@@ -122,7 +122,7 @@ export const Kyc = ({
           id="email"
           name="email"
           type="email"
-          value={kycFields.deposit?.email || "john_doe@stellar.org"}
+          value={kycFields.deposit?.email || ""}
           onChange={handleChangeValue}
           required
         />
@@ -138,7 +138,7 @@ export const Kyc = ({
           label="Amount"
           id="amount"
           name="amount"
-          value={kycFields.withdrawal?.amount || "10"}
+          value={kycFields.withdrawal?.amount || ""}
           onChange={handleChangeValue}
           required
         />
@@ -146,7 +146,7 @@ export const Kyc = ({
           label="First name"
           id="name"
           name="name"
-          value={kycFields.withdrawal?.name || "John"}
+          value={kycFields.withdrawal?.name || ""}
           onChange={handleChangeValue}
           required
         />
@@ -154,7 +154,7 @@ export const Kyc = ({
           label="Last name"
           id="surname"
           name="surname"
-          value={kycFields.withdrawal?.surname || "Doe"}
+          value={kycFields.withdrawal?.surname || ""}
           onChange={handleChangeValue}
           required
         />
@@ -163,7 +163,7 @@ export const Kyc = ({
           id="email"
           name="email"
           type="email"
-          value={kycFields.withdrawal?.email || "jd@stellar.org"}
+          value={kycFields.withdrawal?.email || ""}
           onChange={handleChangeValue}
           required
         />
@@ -171,7 +171,7 @@ export const Kyc = ({
           label="Bank"
           id="bank"
           name="bank"
-          value={kycFields.withdrawal?.bank || "Bank of Stellar"}
+          value={kycFields.withdrawal?.bank || ""}
           onChange={handleChangeValue}
           required
         />
@@ -179,7 +179,7 @@ export const Kyc = ({
           label="Account"
           id="account"
           name="account"
-          value={kycFields.withdrawal?.account || "111222333"}
+          value={kycFields.withdrawal?.account || ""}
           onChange={handleChangeValue}
           required
         />

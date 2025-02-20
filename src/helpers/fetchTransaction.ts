@@ -2,7 +2,6 @@ import { BUSINESS_SERVER_ENDPOINT } from "App";
 
 export const fetchTransaction = async (sToken: string) => {
   try {
-    console.log("************ sToken: " + sToken);
     const response = await fetch(`${BUSINESS_SERVER_ENDPOINT}/transaction`, {
       headers: {
         Authorization: `Bearer ${sToken}`,
