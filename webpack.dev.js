@@ -11,5 +11,8 @@ module.exports = merge(common, {
     port: 3000,
     open: true,
     hot: true,
+    ...(process.env.ALLOWED_HOST && {
+      allowedHosts: [process.env.ALLOWED_HOST],
+    }),
   },
 });
