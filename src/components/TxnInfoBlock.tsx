@@ -1,7 +1,5 @@
-const re = /(.*:)?(.*)(:.*)/gi;
-
 const formatAmount = (amount: string, amountAsset: string) => {
-  return `${amount || ""} ${(amountAsset || "").replace(re, "$2")}`;
+  return `${amount || ""} ${amountAsset?.split(":")[1] || ""}`;
 };
 
 const getTransactionId = (info: any) => {
@@ -45,7 +43,7 @@ const TxnInfoBlock = ({ info }: { info: any }) => {
       <div className="TxnInfo__row">
         <div className="TxnInfo__row__label">Fee amount</div>
         <div className="TxnInfo__row__value">
-          {formatAmount(info.amount_fee?.amount, info.amount_fee?.asset)}
+          {formatAmount(info.fee_details?.total, info.fee_details?.asset)}
         </div>
       </div>
 
