@@ -14,7 +14,6 @@ const getTransactionId = (info: any) => {
 };
 
 const TxnInfoBlock = ({ info }: { info: any }) => {
-  console.log("TxnInfoBlock: " + info.amount_out?.asset);
   return (
     <div className="TxnInfo">
       <div className="TxnInfo__row">
