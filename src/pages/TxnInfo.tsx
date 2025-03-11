@@ -22,7 +22,6 @@ export const TxnInfo = ({ txnId }: { txnId: string | null }) => {
   return (
     <>
       <Heading2>Transaction information</Heading2>
-
       <TxnInfoBlock info={info} />
     </>
   );
