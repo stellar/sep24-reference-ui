@@ -1,5 +1,6 @@
 const formatAmount = (amount: string, amountAsset: string) => {
-  return `${amount || ""} ${amountAsset?.split(":")[1] || ""}`;
+  const assetCode = amountAsset?.split(":")[1] || "";
+  return `${amount || ""} ${assetCode === "native" ? "XLM" : assetCode}`;
 };
 
 const getTransactionId = (info: any) => {
