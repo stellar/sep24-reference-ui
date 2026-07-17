@@ -98,7 +98,8 @@ jobs:
         id: prd
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.ecr-registry }}
-          ECR_PUBLIC_REGISTRY: ${{ steps.ecr-login.outputs.ecr-public-registry }}
+          ECR_PUBLIC_REGISTRY:
+            ${{ steps.ecr-login.outputs.ecr-public-registry }}
           LABEL: ${{ steps.vars.outputs.label }}
         run: |
           set -eu
@@ -113,8 +114,8 @@ jobs:
           ecr-push "${PRD_TAG}"
 
           # Public ECR Gallery — sha + latest
-          PUBLIC_TAG="${ECR_PUBLIC_REGISTRY}/sep24-reference-ui:${LABEL}"
-          PUBLIC_LATEST="${ECR_PUBLIC_REGISTRY}/sep24-reference-ui:latest"
+          PUBLIC_TAG="${ECR_PUBLIC_REGISTRY}/stellar/sep24-reference-ui:${LABEL}"
+          PUBLIC_LATEST="${ECR_PUBLIC_REGISTRY}/stellar/sep24-reference-ui:latest"
           docker tag "${IMAGE}:${LABEL}" "${PUBLIC_TAG}"
           docker tag "${IMAGE}:${LABEL}" "${PUBLIC_LATEST}"
           docker push "${PUBLIC_TAG}"
