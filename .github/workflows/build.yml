@@ -1,0 +1,145 @@
+name: Build and push sep24-reference-ui
+
+# Deployed to: https://github.com/stellar/sep24-reference-ui
+#
+# Converted from the Jenkins pipeline (Jenkinsfile). On every push to main
+# (or manual dispatch) builds the sep24-reference-ui image once, then publishes
+# it to:
+#   - dev:  DockerHub (stellar/sep24-reference-ui:<sha>) + private dev ECR
+#   - prd:  DockerHub (:<sha> + :latest) + private prd ECR + Public ECR Gallery (:<sha> + :latest)
+#
+# Requires DockerHub credentials as repo secrets (DOCKERHUB_USERNAME / DOCKERHUB_TOKEN)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  SLACK_CHANNEL: alerts-product-eng
+  IMAGE: stellar/sep24-reference-ui
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Determine image label
+        id: vars
+        run: echo "label=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: DockerHub login
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: ECR login
+        id: ecr-login
+        uses: stellar/actions/sdf-ecr-login@main
+        with:
+          login-public-ecr: true
+
+      - name: Build image
+        id: build
+        env:
+          LABEL: ${{ steps.vars.outputs.label }}
+        run: |
+          set -eu
+          make docker-build
+
+      - name: Push to dev
+        id: dev
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.ecr-registry }}
+          LABEL: ${{ steps.vars.outputs.label }}
+        run: |
+          set -eu
+          # DockerHub
+          docker push "${IMAGE}:${LABEL}"
+
+          # Private dev ECR
+          DEV_TAG="${ECR_REGISTRY}/dev/sep24-reference-ui:${LABEL}"
+          docker tag "${IMAGE}:${LABEL}" "${DEV_TAG}"
+          ecr-push "${DEV_TAG}"
+
+      - name: Slack notification — dev complete
+        if: always() && steps.dev.outcome == 'success'
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            {
+              "channel": "${{ env.SLACK_CHANNEL }}",
+              "text": "Sep-24 reference UI *dev* build complete for ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}."
+            }
+
+      - name: Slack notification — dev failed
+        if: always() && steps.dev.outcome == 'failure'
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            {
+              "channel": "${{ env.SLACK_CHANNEL }}",
+              "text": "Sep-24 reference UI *dev* build failed for ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}."
+            }
+
+      - name: Push to prd
+        id: prd
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.ecr-registry }}
+          ECR_PUBLIC_REGISTRY: ${{ steps.ecr-login.outputs.ecr-public-registry }}
+          LABEL: ${{ steps.vars.outputs.label }}
+        run: |
+          set -eu
+          # DockerHub — tagged sha + latest
+          docker push "${IMAGE}:${LABEL}"
+          docker tag "${IMAGE}:${LABEL}" "${IMAGE}:latest"
+          docker push "${IMAGE}:latest"
+
+          # Private prd ECR
+          PRD_TAG="${ECR_REGISTRY}/prd/sep24-reference-ui:${LABEL}"
+          docker tag "${IMAGE}:${LABEL}" "${PRD_TAG}"
+          ecr-push "${PRD_TAG}"
+
+          # Public ECR Gallery — sha + latest
+          PUBLIC_TAG="${ECR_PUBLIC_REGISTRY}/sep24-reference-ui:${LABEL}"
+          PUBLIC_LATEST="${ECR_PUBLIC_REGISTRY}/sep24-reference-ui:latest"
+          docker tag "${IMAGE}:${LABEL}" "${PUBLIC_TAG}"
+          docker tag "${IMAGE}:${LABEL}" "${PUBLIC_LATEST}"
+          docker push "${PUBLIC_TAG}"
+          docker push "${PUBLIC_LATEST}"
+
+      - name: Slack notification — prd complete
+        if: always() && steps.prd.outcome == 'success'
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            {
+              "channel": "${{ env.SLACK_CHANNEL }}",
+              "text": "Sep-24 reference UI *prd* build complete for ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}."
+            }
+
+      - name: Slack notification — prd failed
+        if: always() && steps.prd.outcome == 'failure'
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            {
+              "channel": "${{ env.SLACK_CHANNEL }}",
+              "text": "Sep-24 reference UI *prd* build failed for ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}."
+            }
