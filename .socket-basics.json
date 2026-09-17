@@ -1,0 +1,11 @@
+{
+  "workspace": ".",
+  "javascript_sast_enabled": true,
+  "sast_ignore_overrides": "js-unhandled-promise-rejection:src/App.tsx,js-unhandled-promise-rejection:src/pages/Status.tsx,js-unhandled-promise-rejection:src/pages/TxnInfo.tsx",
+  "secret_scanning_enabled": true,
+  "console_tabular_enabled": true,
+  "dockerfiles": "Dockerfile",
+  "socket_tier_1_enabled": false,
+  "trivy_vuln_enabled": false,
+  "trufflehog_exclude_dir": "node_modules,dist,build,.git"
+}
