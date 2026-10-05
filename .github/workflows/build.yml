@@ -46,6 +46,7 @@ jobs:
         uses: stellar/actions/sdf-ecr-login@main
         with:
           login-public-ecr: true
+          auth-mode: oidc
 
       - name: Build image
         id: build
